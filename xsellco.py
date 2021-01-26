@@ -4,9 +4,15 @@ import requests
 from requests.auth import HTTPBasicAuth
 from datetime import datetime
 
+__author__ = "Yan Berezkin"
+__copyright__ = "Copyright 2007, The Cogent Project"
+__credits__ = [""]
+__license__ = "Free_To_Use"
 
-__author__ = 'Yan Berezkin'
-__email__ = 'yan.berezkin@gmail.com'
+__version__ = "1.0.0"
+__maintainer__ = "Yan Berezkin"
+__email__ = "yan.berezkin@gmail.com"
+__status__ = "Development"  # stable
 
 
 def get_datetime(timestamp):
