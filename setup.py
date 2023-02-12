@@ -16,6 +16,6 @@ setuptools.setup(
     url=info.__repo_url__,
     project_urls={"Bug Tracker": info.__bug_tracker__},
     license=info.__license__,
-    packages=[info.__package_name__],
     install_requires=["requests"],
+    packages=["xsellco_api", "xsellco_api.api"],
 )
