@@ -2,7 +2,6 @@
 
 This project provides a Python wrapper for interacting with the [repricer.com](https://www.repricer.com/) (aka xsellco) API, allowing developers to easily integrate the API's functionality into their Python applications.
 
-
 ## Getting Started
 
 These instructions will give you a copy of the project up and running on
@@ -10,12 +9,29 @@ your local machine for development and testing purposes. See deployment
 for notes on deploying the project on a live system.
 
 ### Installing
-pypi.org not yet setup, for now you can install directly from github by:
+[![Badge](https://img.shields.io/pypi/v/xsellco-api?style=for-the-badge)](https://pypi.org/project/xsellco-api/)
 
     pip install xsellco_api
 
-End with an example of getting some data out of the system or using it
-for a little demo
+---
+
+### Usage
+
+```python
+from xsellco_api.api import Users
+from xsellco_api.api import Channels
+from xsellco_api.api import Repricers
+
+# repricer reports API
+repricer_data = Repricers(user_name='your_username', password='your_password').get_report()
+print(repricer_data)  # list of dictionaries
+# or
+cli = Repricers(user_name='your_username', password='your_password')
+repricer_data = cli.get_report()
+print(repricer_data)
+
+```
+
 
 ## License
 
