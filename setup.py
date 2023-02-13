@@ -10,7 +10,7 @@ setuptools.setup(
     version=info.__version__,
     author=info.__author__,
     author_email=info.__email__,
-    description="Testing installation of Package",
+    description="Wrapper around Repricer.com API (aka XSellco)",
     long_description=long_description,
     long_description_content_type="text/markdown",
     url=info.__repo_url__,
