@@ -12,7 +12,7 @@ for notes on deploying the project on a live system.
 ### Installing
 pypi.org not yet setup, for now you can install directly from github by:
 
-    pip install git+https://github.com/yberezkin/xsellco-api.git
+    pip install xsellco_api
 
 End with an example of getting some data out of the system or using it
 for a little demo
