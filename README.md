@@ -18,8 +18,6 @@ for notes on deploying the project on a live system.
 ### Usage
 
 ```python
-from xsellco_api.api import Users
-from xsellco_api.api import Channels
 from xsellco_api.api import Repricers
 
 # repricer reports API
@@ -29,9 +27,7 @@ print(repricer_data)  # list of dictionaries
 cli = Repricers(user_name='your_username', password='your_password')
 repricer_data = cli.get_report()
 print(repricer_data)
-
 ```
-
 
 ## License
 
