@@ -14,7 +14,6 @@ class BaseClient:
     HOST = "api.xsellco.com"
     API_VERSION = "v1"
     USER_AGENT = f"python-{__package_name__}-{__version__}"
-    URL = f"{SCHEME}{HOST}/{API_VERSION}"
 
     def __init__(self, user_name: str, password: str) -> None:
         self.user_name = user_name
@@ -32,6 +31,10 @@ class BaseClient:
             "content-type": "application/json",
         }
 
+    @property
+    def url(self) -> str:
+        return f"{self.SCHEME}{self.HOST}/{self.API_VERSION}"
+
     def _request(
         self,
         method: str,
@@ -48,7 +51,7 @@ class BaseClient:
 
         resp = request(
             method,
-            f"{self.URL}/{endpoint}",
+            f"{self.url}/{endpoint}",
             params=params,
             data=data if data and method in ("POST", "PUT", "PATCH") else None,
             headers=headers or self.headers,

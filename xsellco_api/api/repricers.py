@@ -9,6 +9,8 @@ from xsellco_api.base import BaseClient
 
 
 class Repricers(BaseClient):
+    # Repricer have separate HOST for api calls
+    HOST = "api.repricer.com"
     endpoint = "repricers"
     header_text = "text/plain"
 
