@@ -36,7 +36,7 @@ jobs:
         flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
     - name: Run tests and collect coverage
       run: |
-        python -m pytest --cov=./ --cov-report=xml
+        python -m pytest --cov=./xsellco_api --cov-report=xml
     - name: Upload coverage reports to Codecov
       uses: codecov/codecov-action@v3
       env:
