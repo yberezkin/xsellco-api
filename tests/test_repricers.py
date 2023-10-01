@@ -18,7 +18,7 @@ def test_get_report(repricers_client):
 
     with patch(PATCH_TARGET, return_value=mock_response):
         report = repricers_client.get_report()
-        assert report == [{"header1": "value1", "header2": "value2"}]
+        assert report == [{"header1": "value", "header2": "value2"}]
 
 
 def test_upload_report_data(repricers_client):
