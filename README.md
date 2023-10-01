@@ -1,6 +1,7 @@
 # XSELLCO-API Python Wrapper
 
 [![CodeFactor](https://www.codefactor.io/repository/github/yberezkin/xsellco-api/badge)](https://www.codefactor.io/repository/github/yberezkin/xsellco-api)
+[![Python Pytests](https://github.com/yberezkin/xsellco-api/actions/workflows/python-pytest.yml/badge.svg?branch=main)](https://github.com/yberezkin/xsellco-api/actions/workflows/python-pytest.yml)
 
 This project provides a Python wrapper for interacting with the [repricer.com](https://www.repricer.com/) (aka xsellco) API, allowing developers to easily integrate the API's functionality into their Python applications.
 
