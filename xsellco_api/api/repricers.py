@@ -1,55 +1,71 @@
 # encoding: utf-8
-from __future__ import annotations
 
 import csv
+import logging
 from io import StringIO
-from typing import Dict, List
+from typing import Any, Dict, List
 
 from xsellco_api.base import BaseClient
 
+logger = logging.getLogger(__name__)
+
 
 class Repricers(BaseClient):
-    # Repricer have separate HOST for api calls
-    HOST = "api.repricer.com"
+    HOST = "api.repricer.com"  # Repricer uses a different HOST for its API calls
     endpoint = "repricers"
-    header_text = "text/plain"
 
     def get_report(self) -> List[Dict]:
-        headers = self.headers
-        headers.update({"accept": self.header_text})
-
-        response = self._request("GET", self.endpoint, headers=headers)
-        _data = response.text.splitlines()
-
-        reader = csv.DictReader(_data, delimiter=",")
+        """
+        https://developers.repricer.com/reference/get-a-repricer-file
+        """
+        response = self._request("GET", self.endpoint)
+        reader = csv.DictReader((line for line in response.text.splitlines()), delimiter=",")
         return [dict(e) for e in reader]
 
-    def upload_report(self, data: List[Dict] | None = None, file_path: str | None = None):
+    def upload_report(self, data: List[Dict] | None = None, file_path: str | None = None) -> Dict[str, Any]:
         """
-        https://developers.edesk.com/v1.0/reference/repricer-object
-        In the same way that you may download a product template, containing a list of all your listings within our
-        system, you may retrieve and upload this file programmatically. The file format you must upload is
-        comma-separated ('CSV’). The format of the file you may retrieve is also comma-separated. When uploading a
-        repricer file, only those listings contained within the file will be updated within our system. Also,
-        the smaller the file size, the faster the desired action occurs.
+        https://developers.repricer.com/reference/upload-a-repricer-file
         """
-        headers = self.headers
-        headers.update({"content-type": self.header_text})
+        if not data and not file_path:
+            raise ValueError("Either 'data' or 'file_path' must be provided.")
+
+        if data and file_path:
+            raise ValueError("Both 'data' and 'file_path' were provided. Please provide only one.")
+
+        headers = {"content-type": "text/plain"}
 
         _bytes: bytes = b""
 
-        if data is not None:
-            with StringIO() as csvfile:
-                wr = csv.DictWriter(csvfile, fieldnames=data[0].keys())
+        try:
+            if data:
+                _bytes = self._generate_csv_bytes_from_data(data)
+            elif file_path:
+                with open(file_path, "rb") as file:
+                    _bytes = file.read()
+
+            response = self._request("POST", self.endpoint, data=_bytes, headers=headers)
+
+            return response.json()
+
+        except (ValueError, FileNotFoundError) as known_ex:
+            logger.exception(f"Known exception occurred: {known_ex}", exc_info=True)
+            raise
+
+        except Exception as ex:
+            # Handle any other unexpected exceptions
+            logger.exception(f"An unexpected error occurred: {ex}", exc_info=True)
+            raise
+
+    @staticmethod
+    def _generate_csv_bytes_from_data(data: List[Dict]) -> bytes:
+        try:
+            with StringIO(
+                newline=""
+            ) as csvfile:  # Explicitly set newline to an empty string for cross-platform compatibility
+                wr = csv.DictWriter(csvfile, fieldnames=data[0].keys(), lineterminator="\n")
                 wr.writeheader()
                 wr.writerows(data)
-                _bytes = csvfile.getvalue().encode("UTF-8")
-
-        elif file_path is not None:
-            _bytes = open(file_path, "rb").read()
-
-        else:
-            raise ValueError("either `data` or `file_path` arguments must be provided")
-
-        response = self._request("POST", self.endpoint, data=_bytes, headers=headers)
-        return response.json()
+                return csvfile.getvalue().encode("UTF-8")
+        except Exception as ex:
+            logger.exception(f"Error generating CSV bytes: {ex}", exc_info=True)
+            raise
