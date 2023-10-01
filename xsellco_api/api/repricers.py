@@ -3,7 +3,7 @@
 import csv
 import logging
 from io import StringIO
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Optional
 
 from xsellco_api.base import BaseClient
 
@@ -22,7 +22,7 @@ class Repricers(BaseClient):
         reader = csv.DictReader((line for line in response.text.splitlines()), delimiter=",")
         return [dict(e) for e in reader]
 
-    def upload_report(self, data: List[Dict] | None = None, file_path: str | None = None) -> Dict[str, Any]:
+    def upload_report(self, data: Optional[List[Dict]] = None, file_path: Optional[str] = None) -> Dict[str, Any]:
         """
         https://developers.repricer.com/reference/upload-a-repricer-file
         """
