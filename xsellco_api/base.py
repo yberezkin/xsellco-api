@@ -1,7 +1,7 @@
 # encoding: utf-8
 import logging
 from http import HTTPStatus
-from typing import Dict
+from typing import Dict, Optional, Union
 
 from requests import HTTPError, RequestException, Response, request
 from requests.auth import HTTPBasicAuth
@@ -53,9 +53,9 @@ class BaseClient:
         method: str,
         endpoint: str,
         data=None,
-        params: dict | None = None,
-        headers: dict | None = None,
-        timeout: float | int | None = None,
+        params: Optional[dict] = None,
+        headers: Optional[dict] = None,
+        timeout: Optional[Union[float, int]] = None,
     ) -> Response:
         """
         Make a request to xsellco's API.
