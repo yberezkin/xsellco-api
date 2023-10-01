@@ -45,3 +45,4 @@ repos:
         entry: tox run-parallel
         language: system
         types: [python]
+        pass_filenames: false
