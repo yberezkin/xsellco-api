@@ -85,40 +85,55 @@ class BaseClient:
                 method,
                 url=f"{self.url}/{endpoint}",
                 params=params,
-                data=data if data and isinstance(data, dict) and method in ("POST", "PUT", "PATCH") else None,
+                data=data if data and method in ("POST", "PUT", "PATCH") else None,
                 headers=all_headers,
                 auth=self.basic_auth,
                 timeout=timeout,
             )
-
-            # Check for HTTP error status codes
-            try:
-                resp.raise_for_status()
-            except HTTPError:
-                # Handle specific status codes
-                if resp.status_code == HTTPStatus.UNAUTHORIZED:
-                    msg = f"{HTTPStatus.UNAUTHORIZED.description} for: {resp.url}. Check your username and password."
-                    logger.error(msg)
-                    raise XsellcoAuthError(msg)
-                elif resp.status_code == 404:
-                    msg = f"Resource not found: {endpoint}"
-                    logger.error(msg)
-                    raise XsellcoNotFoundError(msg)
-                elif resp.status_code == 429:
-                    msg = "API rate limit reached. Try again later."
-                    logger.error(msg)
-                    raise XsellcoRateLimitError(msg)
-                elif resp.status_code == 500:
-                    msg = f"Internal Server Error from {resp.url}. Please try again later or contact support."
-                    logger.error(msg)
-                    raise XsellcoServerError(msg)
-                else:
-                    msg = f"HTTP Error {resp.status_code}: {resp.text}"
-                    logger.error(msg)
-                    raise XsellcoAPIError(msg)
-
-            return resp
+            return self._process_response(resp)
         except RequestException as req_ex:
             # Handle any HTTP request-related exceptions
             logger.exception(f"Request Exception: {req_ex}")
             raise
+
+    @staticmethod
+    def _process_response(response: Response) -> Response:
+        """
+        Process the response from the API.
+
+        :param response: Response object from the requests library.
+        :type response: Response
+        :return response: Response object from the requests library if no errors occurred.
+        :rtype: response: Response
+        """
+
+        # Check for HTTP error status codes
+        try:
+            response.raise_for_status()
+        except HTTPError:
+            # Handle specific status codes
+            if response.status_code == HTTPStatus.UNAUTHORIZED:
+                msg = f"{HTTPStatus.UNAUTHORIZED.description} for: {response.url}. Check your username and password."
+                logger.error(msg)
+                raise XsellcoAuthError(msg)
+            elif response.status_code == HTTPStatus.NOT_FOUND:
+                msg = f"{HTTPStatus.NOT_FOUND.description} for: {response.url}"
+                logger.error(msg)
+                raise XsellcoNotFoundError(msg)
+            elif response.status_code == HTTPStatus.TOO_MANY_REQUESTS:
+                msg = f"{HTTPStatus.TOO_MANY_REQUESTS.description} Try again later."
+                logger.error(msg)
+                raise XsellcoRateLimitError(msg)
+            elif response.status_code == HTTPStatus.INTERNAL_SERVER_ERROR:
+                msg = (
+                    f"{HTTPStatus.INTERNAL_SERVER_ERROR.description} from {response.url}. "
+                    f"Please try again later or contact support."
+                )
+                logger.error(msg)
+                raise XsellcoServerError(msg)
+            else:
+                msg = f"HTTP Error {response.status_code}: {response.text}"
+                logger.error(msg)
+                raise XsellcoAPIError(msg)
+
+        return response
