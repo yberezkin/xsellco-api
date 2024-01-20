@@ -1,9 +1,9 @@
 from typing import Any, Dict
 
-from xsellco_api.sync.client import BaseClient
+from xsellco_api.sync.client import SyncClient
 
 
-class Channels(BaseClient):
+class Channels(SyncClient):
     endpoint = "channels"
 
     def get_channel(self, channel_id: int):

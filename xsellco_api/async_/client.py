@@ -9,32 +9,29 @@ from xsellco_api.exceptions import XsellcoAPIError
 logger = logging.getLogger(__name__)
 
 
-class SyncClient(BaseClient):
-    """
-    Base Class for Xsellco's API using httpx for synchronous requests.
-    """
-
-    def _get_client(self):
+class AsyncClient(BaseClient):
+    async def _get_client(self):
         if self._client is None:
-            self._client = httpx.Client(base_url=self.url, headers=self.headers, auth=(self.user_name, self.password))
+            self._client = httpx.AsyncClient(
+                base_url=self.url, headers=self.headers, auth=(self.user_name, self.password)
+            )
         return self._client
 
-    def __enter__(self):
-        # Initialize the httpx.Client instance when entering the context
-        self._get_client()
+    async def __aenter__(self):
+        await self._get_client()
         return self
 
-    def __exit__(self, exc_type, exc_val, exc_tb):
+    async def __aexit__(self, exc_type, exc_val, exc_tb):
         if self._client:
-            self._client.close()
+            await self._client.aclose()
             self._client = None
 
-    def close(self):
+    async def close(self):
         if self._client:
-            self._client.close()
+            await self._client.aclose()
             self._client = None
 
-    def _request(
+    async def _request(
         self,
         method: str,
         endpoint: str,
@@ -44,21 +41,16 @@ class SyncClient(BaseClient):
         timeout: Optional[Union[float, int]] = None,
     ) -> httpx.Response:
         try:
-            client = self._get_client()
-            data = data or {}
-            params = params or {}
-            # Correctly constructing the URL using the base URL and the endpoint
-            all_headers = {**self.headers, **(headers or {})}
-            response = client.request(
+            client = await self._get_client()
+            response = await client.request(
                 method,
                 f"{endpoint}".rstrip("/"),
                 params=params,
-                data=data if data and method in ("POST", "PUT", "PATCH") else None,
-                headers=all_headers,
+                json=data if data and method in ("POST", "PUT", "PATCH") else None,
+                headers=headers,
                 timeout=timeout,
             )
             return self._process_response(response)
         except httpx.RequestError as req_err:
-            # Handle request errors (e.g., network issues)
             logger.exception(f"Request Exception: {req_err}")
             raise XsellcoAPIError(f"Request Exception: {req_err}") from req_err

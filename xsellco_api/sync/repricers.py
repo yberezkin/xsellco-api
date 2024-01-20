@@ -3,12 +3,12 @@ import logging
 from io import StringIO
 from typing import Any, Dict, List, Optional
 
-from xsellco_api.sync.client import BaseClient
+from xsellco_api.sync.client import SyncClient
 
 logger = logging.getLogger(__name__)
 
 
-class Repricers(BaseClient):
+class Repricers(SyncClient):
     HOST = "api.repricer.com"  # Repricer uses a different HOST for its API calls
     endpoint = "repricers"
 
@@ -48,6 +48,7 @@ class Repricers(BaseClient):
                 self._validate_data_headers(data)  # Validate headers
                 _bytes = self._generate_csv_bytes_from_data(data)
             elif file_path:
+                # When we're using file path, we don't validate headers. We assume the file is valid.
                 with open(file_path, "rb") as file:
                     _bytes = file.read()
 

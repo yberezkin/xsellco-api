@@ -1,7 +1,7 @@
-from xsellco_api.sync.client import BaseClient
+from xsellco_api.sync.client import SyncClient
 
 
-class Users(BaseClient):
+class Users(SyncClient):
     endpoint = "users"
 
     def get_user(self, user_id: int):
