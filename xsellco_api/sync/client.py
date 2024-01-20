@@ -14,6 +14,7 @@ from xsellco_api.exceptions import (
 )
 from xsellco_api.info import __package_name__, __version__
 
+logging.basicConfig(format="%(asctime)s - %(name)s - %(levelname)s - %(message)s", level=logging.DEBUG)
 logger = logging.getLogger(__name__)
 
 
@@ -30,7 +31,27 @@ class BaseClient:
     def __init__(self, user_name: str, password: str) -> None:
         self.user_name = user_name
         self.password = password
-        self.client = httpx.Client(base_url=self.url, headers=self.headers, auth=(self.user_name, self.password))
+        self._client = None
+
+    def _get_client(self):
+        if self._client is None:
+            self._client = httpx.Client(base_url=self.url, headers=self.headers, auth=(self.user_name, self.password))
+        return self._client
+
+    def __enter__(self):
+        # Initialize the httpx.Client instance when entering the context
+        self._get_client()
+        return self
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        if self._client:
+            self._client.close()
+            self._client = None
+
+    def close(self):
+        if self._client:
+            self._client.close()
+            self._client = None
 
     @property
     def headers(self) -> Dict[str, str]:
@@ -54,13 +75,16 @@ class BaseClient:
         timeout: Optional[Union[float, int]] = None,
     ) -> httpx.Response:
         try:
+            client = self._get_client()
+            data = data or {}
+            params = params or {}
             # Correctly constructing the URL using the base URL and the endpoint
             all_headers = {**self.headers, **(headers or {})}
-            response = self.client.request(
+            response = client.request(
                 method,
                 f"{endpoint}".rstrip("/"),
                 params=params,
-                json=data if data and method in ("POST", "PUT", "PATCH") else None,
+                data=data if data and method in ("POST", "PUT", "PATCH") else None,
                 headers=all_headers,
                 timeout=timeout,
             )
@@ -114,6 +138,3 @@ class BaseClient:
             # Catch other unforeseen errors
             logger.exception(f"Unexpected error: {e}")
             raise XsellcoAPIError(f"Unexpected error: {e}") from e
-
-    def close(self):
-        self.client.close()
