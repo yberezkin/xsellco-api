@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import logging
 from typing import Optional, Union
 
@@ -49,13 +51,15 @@ class SyncClient(BaseClient):
             params = params or {}
             # Correctly constructing the URL using the base URL and the endpoint
             all_headers = {**self.headers, **(headers or {})}
+
+            if isinstance(data, bytes):
+                # If data is bytes, use the content parameter
+                request_args = {"content": data}
+            else:
+                # For non-bytes data, use the json parameter if applicable
+                request_args = {"data": data} if data and method in ("POST", "PUT", "PATCH") else {}
             response = client.request(
-                method,
-                f"{endpoint}".rstrip("/"),
-                params=params,
-                data=data if data and method in ("POST", "PUT", "PATCH") else None,
-                headers=all_headers,
-                timeout=timeout,
+                method, f"{endpoint}".rstrip("/"), params=params, headers=all_headers, timeout=timeout, **request_args
             )
             return self._process_response(response)
         except httpx.RequestError as req_err:
