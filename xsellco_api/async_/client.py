@@ -41,14 +41,19 @@ class AsyncClient(BaseClient):
         timeout: Optional[Union[float, int]] = None,
     ) -> httpx.Response:
         try:
+            data = data or {}
+            params = params or {}
+            all_headers = {**self.headers, **(headers or {})}
+
+            if isinstance(data, bytes):
+                # If data is bytes, use the content parameter
+                request_args = {"content": data}
+            else:
+                # For non-bytes data, use the json parameter if applicable
+                request_args = {"data": data} if data and method in ("POST", "PUT", "PATCH") else {}
             client = await self._get_client()
             response = await client.request(
-                method,
-                f"{endpoint}".rstrip("/"),
-                params=params,
-                json=data if data and method in ("POST", "PUT", "PATCH") else None,
-                headers=headers,
-                timeout=timeout,
+                method, f"{endpoint}".rstrip("/"), params=params, headers=all_headers, timeout=timeout, **request_args
             )
             return self._process_response(response)
         except httpx.RequestError as req_err:
