@@ -13,6 +13,13 @@ from xsellco_api.exceptions import (
 )
 from xsellco_api.info import __package_name__, __version__
 
+DEPRECATION_MESSAGE = """The xsellco_api.api module is deprecated and will be removed in a future version.
+Please update your code to use the new async or sync modules.
+ex: from xsellco_api.sync import Repricers, Channels, Users
+or
+from xsellco_api.async_ import AsyncRepricers, AsyncChannels, AsyncUsers
+"""
+
 
 class BaseClient:
     SCHEME = "https://"

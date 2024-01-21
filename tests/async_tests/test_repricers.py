@@ -10,7 +10,6 @@ async def test_get_report(httpx_mock):
 
     async with AsyncRepricers("user", "pass") as repricers:
         report = await repricers.get_report()
-        print(f"Report received: {report}")
         assert report == [{"sku": "123", "price": "10"}]
 
 
