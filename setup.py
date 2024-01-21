@@ -16,8 +16,8 @@ setuptools.setup(
     url=info.__repo_url__,
     project_urls={"Bug Tracker": info.__bug_tracker__},
     license=info.__license__,
-    install_requires=["requests>=2.30.0"],
-    packages=["xsellco_api", "xsellco_api.api"],
-    python_requires=">=3.8",
+    install_requires=["requests>=2.30.0", "httpx>=0.18.0"],
+    packages=["xsellco_api", "xsellco_api.api", "xsellco_api.sync", "xsellco_api.async_", "xsellco_api.common"],
+    python_requires=">=3.9",
     keywords="xsellco, repricer",
 )

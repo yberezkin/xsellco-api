@@ -1,11 +1,13 @@
 # encoding: utf-8
 import logging
+import warnings
 from http import HTTPStatus
 from typing import Dict, Optional, Union
 
 from requests import HTTPError, RequestException, Response, request
 from requests.auth import HTTPBasicAuth
 
+from xsellco_api.common.base import DEPRECATION_MESSAGE
 from xsellco_api.exceptions import (
     XsellcoAPIError,
     XsellcoAuthError,
@@ -29,6 +31,7 @@ class BaseClient:
     USER_AGENT = f"python-{__package_name__}-{__version__}"
 
     def __init__(self, user_name: str, password: str) -> None:
+        warnings.warn(DEPRECATION_MESSAGE, DeprecationWarning, stacklevel=2)
         self.user_name = user_name
         self.password = password
 
