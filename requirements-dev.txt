@@ -8,7 +8,7 @@ black==23.12.1
 flake8==7.0.0
 isort==5.13.2
 mypy==1.8.0
-types-docutils==0.20.0.20240106
+types-docutils==0.20.0.20240126
 types-requests==2.31.0.20240106
 types-setuptools==69.0.0.20240115
 types-urllib3==1.26.25.14
