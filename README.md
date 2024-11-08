@@ -6,6 +6,7 @@
 
 
 This project provides a Python wrapper for interacting with the [Repricer.com](https://www.repricer.com/) (aka Xsellco) API, simplifying the integration of Repricer.com's API features into Python applications. It offers both synchronous and asynchronous support to accommodate different programming needs, thanks in part to the [httpx library](https://github.com/encode/httpx). Detailed API documentation can be found at [eDesk Developers](https://developers.edesk.com/).
+Also new API documentation because of separation of Repricer.com and eDesk API can be found at [repricer api](https://developers.repricer.com/reference).
 
 ## Getting Started
 
